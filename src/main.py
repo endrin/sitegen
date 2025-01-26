@@ -1,5 +1,8 @@
+from textnode import TextNode, TextType
+
+
 def main():
-    print("hello world")
+    print(TextNode("texnode test", TextType.IMAGE, "https://www.boot.dev"))
 
 
 if __name__ == "__main__":
