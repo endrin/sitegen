@@ -19,3 +19,16 @@ class HTMLNode:
             f"{name}={value!r}" for name, value in self.__dict__.items()
         )
         return f"{self.__class__.__name__}({members})"
+
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag=None, value=None, props=None):
+        super().__init__(tag=tag, value=value, props=props)
+
+    def to_html(self):
+        if self.value is None:
+            raise ValueError("Leaf Node cannot be empty")
+
+        tag = self.tag
+        value = self.value
+        return f"<{tag}{self.props_to_html()}>{value}</{tag}>"
