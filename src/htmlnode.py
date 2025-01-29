@@ -2,8 +2,9 @@ class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
         self.value = value
-        self.children = children
-        self.props = props
+        if children is not None:
+            self.children = children
+        self.props = props if props is not None else {}
 
     def to_html(self):
         raise NotImplementedError("this method is subclass only")
@@ -23,6 +24,9 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag=None, value=None, props=None):
+        if tag is None and props is not None:
+            raise ValueError("tag is missing")
+
         super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self):
@@ -31,4 +35,8 @@ class LeafNode(HTMLNode):
 
         tag = self.tag
         value = self.value
-        return f"<{tag}{self.props_to_html()}>{value}</{tag}>"
+        return (
+            f"<{tag}{self.props_to_html()}>{value}</{tag}>"
+            if tag is not None
+            else value
+        )

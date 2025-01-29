@@ -18,10 +18,17 @@ class TestLeafNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = LeafNode(tag="p", props={"display": "none"}).to_html()
 
-    def test_empty_repr(self):
+    def test_plain_text_has_no_props(self):
+        with self.assertRaises(ValueError):
+            _ = LeafNode(value="Plain text", props={"href": "https://example.com"})
+
+    def test_to_html_plain_text(self):
+        self.assertEqual(LeafNode(value="Plain text").to_html(), "Plain text")
+
+    def test_repr(self):
         self.assertEqual(
             repr(LeafNode("a", "Click me!", {"href": "https://www.google.com"})),
-            "LeafNode(tag='a', value='Click me!', children=None, props={'href': 'https://www.google.com'})",
+            "LeafNode(tag='a', value='Click me!', props={'href': 'https://www.google.com'})",
         )
 
 
