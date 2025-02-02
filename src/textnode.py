@@ -46,16 +46,3 @@ def text_node_to_html_node(text_node: TextNode):
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
         case _:
             raise NotImplementedError("This type of text node is not here yet")
-
-
-def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    def split_node(node: TextNode):
-        [left, middle, right] = node.text.split(delimiter, maxsplit=3)
-        base_type = node.text_type if not node.url else TextType.TEXT
-        return [
-            TextNode(left, base_type),
-            TextNode(middle, text_type),
-            TextNode(right, base_type),
-        ]
-
-    return list(*(split_node(n) for n in old_nodes))
