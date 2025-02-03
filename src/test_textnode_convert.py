@@ -1,5 +1,6 @@
 import unittest
 
+from split_nodes import text_to_textnodes
 from textnode import TextNode, TextType, text_node_to_html_node
 
 
@@ -46,6 +47,35 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
                 expected,
                 msg=f"{case_id} test failed",
             )
+
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_all_splits(self):
+        input = (
+            "This is **text** "
+            "with an *italic* word "
+            "and a `code block` "
+            "and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) "
+            "and a [link](https://boot.dev)"
+        )
+        expected_output = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        actual_output = text_to_textnodes(input)
+
+        # self.maxDiff = None
+        self.assertEqual(actual_output, expected_output)
 
 
 if __name__ == "__main__":

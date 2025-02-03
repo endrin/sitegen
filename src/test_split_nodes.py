@@ -23,18 +23,22 @@ class TestSplitNodes(unittest.TestCase):
 
         self.assertEqual(new_nodes, expected_nodes)
 
-    def test_split_link(self):
-        node = TextNode(
-            "This is a link with **a very important** title",
-            TextType.LINK,
-            "https://example.com",
-        )
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+    def test_split_wrong_splitter(self):
+        node = TextNode("This is text with **no code block** at all", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
 
         expected_nodes = [
-            TextNode("This is a link with ", TextType.TEXT),
-            TextNode("a very important", TextType.BOLD),
-            TextNode(" title", TextType.TEXT),
+            TextNode("This is text with **no code block** at all", TextType.TEXT),
+        ]
+
+        self.assertEqual(new_nodes, expected_nodes)
+
+    def test_split_non_text_block(self):
+        node = TextNode("This is italic text with no code", TextType.ITALIC)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+
+        expected_nodes = [
+            TextNode("This is italic text with no code", TextType.ITALIC),
         ]
 
         self.assertEqual(new_nodes, expected_nodes)
@@ -73,6 +77,16 @@ class TestSplitNodes(unittest.TestCase):
             TextNode(" and some text at the end", TextType.TEXT),
         ]
         self.assertEqual(new_nodes, expected_nodes)
+
+    # def test_split_wrong_splitter(self):
+    #     node = TextNode("This is text with **no code block** at all", TextType.TEXT)
+    #     new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+
+    #     expected_nodes = [
+    #         TextNode("This is text with **no code block** at all", TextType.TEXT),
+    #     ]
+
+    #     self.assertEqual(new_nodes, expected_nodes)
 
 
 class TestExtractMarkdown(unittest.TestCase):
