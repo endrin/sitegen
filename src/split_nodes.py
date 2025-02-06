@@ -1,6 +1,6 @@
 import re
 
-from functools import partial, reduce
+from functools import partial
 
 from textnode import TextNode, TextType
 

@@ -1,25 +1,37 @@
+from typing import Self
+
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
         self.value = value
-        if children is not None:
-            self.children = children
-        self.props = props if props is not None else {}
+        self.children = children
+        self.props = props
 
     def to_html(self):
         raise NotImplementedError("this method is subclass only")
 
     def props_to_html(self):
-        if not self.props:
+        if self.props is None:
             return ""
 
-        return " " + " ".join(f'{key}="{value}"' for key, value in self.props.items())
+        return "".join(f' {key}="{value}"' for key, value in self.props.items())
 
     def __repr__(self):
         members = ", ".join(
-            f"{name}={value!r}" for name, value in self.__dict__.items()
+            f"{name}={value!r}"
+            for name, value in self.__dict__.items()
+            if value is not None
         )
         return f"{self.__class__.__name__}({members})"
+
+    def __eq__(self, other: Self):
+        return (
+            self.tag == other.tag
+            and self.value == other.value
+            and self.props == other.props
+            and self.children == other.children
+        )
 
 
 class ParentNode(HTMLNode):

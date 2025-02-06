@@ -1,5 +1,9 @@
 import re
 
+from htmlnode import ParentNode
+from textnode import TextNode, TextType
+from transforms import text_node_to_html_node, text_to_textnodes
+
 
 def markdown_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
@@ -61,3 +65,49 @@ def is_ordered_list(block: str) -> bool:
 
 def _has_prefix(line: str, prefix: str) -> bool:
     return line.startswith(f"{prefix} ") or line == prefix
+
+
+def wrap_text_nodes(parent_tag, nodes):
+    return ParentNode(parent_tag, [text_node_to_html_node(node) for node in nodes])
+
+
+def block_to_html_node(block: str) -> ParentNode:
+    match block_to_block_type(block):
+        case "heading":
+            [markup, content] = block.split(" ", maxsplit=1)
+            nodes = text_to_textnodes(content)
+            return wrap_text_nodes(f"h{len(markup)}", nodes)
+        case "code":
+            content = block.removeprefix("```").removesuffix("```").strip()
+            nodes = [TextNode(content, TextType.CODE)]
+            return wrap_text_nodes("pre", nodes)
+        case "quote":
+            content = "\n".join(
+                line.removeprefix(">").removeprefix(" ") for line in block.split("\n")
+            )
+            nodes = [TextNode(content, TextType.TEXT)]
+            return wrap_text_nodes("blockquote", nodes)
+        case "unordered_list":
+            list_mark = block[0]
+            lines = [
+                line.removeprefix(list_mark).removeprefix(" ")
+                for line in block.split("\n")
+            ]
+            return ParentNode(
+                "ul", [wrap_text_nodes("li", text_to_textnodes(line)) for line in lines]
+            )
+        case "ordered_list":
+            lines = [
+                line.split(".", maxsplit=1)[1].removeprefix(" ")
+                for line in block.split("\n")
+            ]
+            return ParentNode(
+                "ol", [wrap_text_nodes("li", text_to_textnodes(line)) for line in lines]
+            )
+        case "paragraph":
+            return wrap_text_nodes("p", text_to_textnodes(block))
+
+
+def markdown_to_html_node(markdown: str) -> ParentNode:
+    blocks = markdown_to_blocks(markdown)
+    return ParentNode("div", [block_to_html_node(block) for block in blocks])

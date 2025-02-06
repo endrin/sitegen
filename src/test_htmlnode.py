@@ -7,7 +7,13 @@ class TestHTMLNode(unittest.TestCase):
     def test_empty_repr(self):
         self.assertEqual(
             repr(HTMLNode()),
-            "HTMLNode(tag=None, value=None, props={})",
+            "HTMLNode()",
+        )
+
+    def test_almost_empty_repr(self):
+        self.assertEqual(
+            repr(HTMLNode(tag=None, value=None, props=None)),
+            "HTMLNode()",
         )
 
     def test_no_tohtml(self):
