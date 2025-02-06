@@ -12,3 +12,5 @@ wheels/
 # Project-specific
 public/*
 !public/.gitkeep
+static/*
+!static/.gitkeep
