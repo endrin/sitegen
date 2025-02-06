@@ -1,7 +1,7 @@
 import unittest
 
-from split_nodes import text_to_textnodes
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType
+from transforms import text_node_to_html_node, text_to_textnodes
 
 
 class TestTextNodeToHtmlNode(unittest.TestCase):

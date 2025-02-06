@@ -78,9 +78,3 @@ SPLITTERS = [
     split_nodes_image,
     split_nodes_link,
 ]
-
-
-def text_to_textnodes(text):
-    return reduce(
-        lambda nodes, split: split(nodes), SPLITTERS, [TextNode(text, TextType.TEXT)]
-    )
