@@ -8,3 +8,4 @@ fi
 
 
 uv run src/main.py
+uv run -m http.server -d public 8899
