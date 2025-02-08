@@ -43,6 +43,20 @@ class TestSplitNodes(unittest.TestCase):
 
         self.assertEqual(new_nodes, expected_nodes)
 
+    def test_split_multiple_delimiters(self):
+        node = TextNode(
+            "An elaborate pantheon of deities (the `Valar` and `Maiar`)", TextType.TEXT
+        )
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        expected_nodes = [
+            TextNode("An elaborate pantheon of deities (the ", TextType.TEXT),
+            TextNode("Valar", TextType.CODE),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("Maiar", TextType.CODE),
+            TextNode(")", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
     def test_split_nodes_link(self):
         node = TextNode(
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
@@ -77,16 +91,6 @@ class TestSplitNodes(unittest.TestCase):
             TextNode(" and some text at the end", TextType.TEXT),
         ]
         self.assertEqual(new_nodes, expected_nodes)
-
-    # def test_split_wrong_splitter(self):
-    #     node = TextNode("This is text with **no code block** at all", TextType.TEXT)
-    #     new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-
-    #     expected_nodes = [
-    #         TextNode("This is text with **no code block** at all", TextType.TEXT),
-    #     ]
-
-    #     self.assertEqual(new_nodes, expected_nodes)
 
 
 class TestExtractMarkdown(unittest.TestCase):

@@ -11,12 +11,12 @@ _LINK_RE_ = re.compile(r"(?<!!)\[([^\]]+)\]\(([^\)]+)\)")
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     def split_node(node: TextNode):
         try:
-            [left, middle, right] = node.text.split(delimiter, maxsplit=3)
+            [left, middle, right] = node.text.split(delimiter, maxsplit=2)
             base_type = node.text_type
             return [
                 TextNode(left, base_type),
                 TextNode(middle, text_type),
-                TextNode(right, base_type),
+                *split_node(TextNode(right, base_type)),
             ]
         except ValueError:
             return [node]
