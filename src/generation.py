@@ -1,8 +1,31 @@
 import os
 import re
+import shutil
 from typing import NoReturn
 
 from textblock import markdown_to_html_node
+
+
+def clear_dir(path: str):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path, exist_ok=True)
+
+
+def mirror(source: str, destination: str, *, verbose=False):
+    clear_dir(destination)
+
+    for entry in os.scandir(source):
+        src_path = entry.path
+        dst_path = src_path.replace(source, destination)
+
+        if entry.is_dir():
+            mirror(src_path, dst_path, verbose=verbose)
+            continue
+
+        if verbose:
+            print(f"{src_path} -> {dst_path}")
+            shutil.copy2(src_path, dst_path)
 
 
 def extract_title(markdown: str) -> str | NoReturn:
@@ -29,3 +52,19 @@ def generate_page(from_path, template_path, dest_path):
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w") as html_f:
         html_f.write(html)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for entry in os.scandir(dir_path_content):
+        src_path = entry.path
+        dst_path = src_path.replace(dir_path_content, dest_dir_path)
+
+        if entry.is_dir():
+            generate_pages_recursive(src_path, template_path, dst_path)
+            continue
+
+        if not src_path.endswith(".md"):
+            continue
+
+        dst_path = dst_path.removesuffix(".md") + ".html"
+        generate_page(src_path, template_path, dst_path)
